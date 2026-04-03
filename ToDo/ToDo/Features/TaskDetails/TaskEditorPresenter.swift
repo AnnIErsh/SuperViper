@@ -97,6 +97,7 @@ final class TaskEditorPresenter: ObservableObject {
         }
 
         isSaving = true
+        let finish = onFinish
 
         interactor.save(
             mode: mode,
@@ -105,14 +106,19 @@ final class TaskEditorPresenter: ObservableObject {
             isCompleted: isCompleted
         ) { [weak self] result in
             DispatchQueue.main.async {
-                guard let self else { return }
+                guard let self else {
+                    if case .success(let task) = result {
+                        finish(task)
+                    }
+                    return
+                }
 
                 switch result {
                 case .success(let task):
                     self.lastSavedTitle = task.title
                     self.lastSavedDetails = task.details
                     self.lastSavedCompleted = task.isCompleted
-                    self.onFinish(task)
+                    finish(task)
 
                 case .failure(let error):
                     self.errorMessage = error.localizedDescription

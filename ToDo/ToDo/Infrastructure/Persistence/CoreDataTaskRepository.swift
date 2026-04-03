@@ -96,7 +96,12 @@ final class CoreDataTaskRepository: TaskRepository {
 
             let result = try context.fetch(request).first
             let maxId = result?["maxId"] as? Int64 ?? 0
-            return Int(maxId + 1)
+
+            // Keep locally created IDs in a high range so they never collide
+            // with imported remote tasks during first-launch bootstrap.
+            let localBase: Int64 = 1_000_000
+            let next = max(maxId, localBase) + 1
+            return Int(next)
         }, completion: completion)
     }
 

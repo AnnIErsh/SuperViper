@@ -31,6 +31,7 @@ struct TaskEditorView: View {
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
                 Button {
+                    presenter.autosaveIfNeeded()
                     dismiss()
                 } label: {
                     Label("Назад", systemImage: "chevron.backward")
